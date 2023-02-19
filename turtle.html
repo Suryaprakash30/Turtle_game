@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Turtle</title>
+	</head>
+	<style>
+		* {
+		margin: 5px;
+		}
+		tr,
+		td {
+		height: 25px;
+		width: 25px;
+		margin: 5px;
+		}
+		p {
+		color: red;
+		text-align: center;
+		}
+	</style>
+	<body>
+		<h2>Turtle Task</h2>
+		ENTER ROW COUNT :<input type="number" min="0" name="" id="rowCount" /> 
+		ENTER COLUMN COUNT:<input type="number" min="0" name="" id="colCount" />
+		<button onclick="createTable()">Generate Grid</button>
+		ENTER THE PATH : <input type="text" min="0" id="path" placeholder="Enter only F or L or R" onkeypress="return(event.charCode==102 || event.charCode==70 || event.charCode==108 || event.charCode==76 || event.charCode==114 || event.charCode==82)" />
+		<input type="hidden" id="row" />
+		<input type="hidden" id="column" />
+		<input type="hidden" id="dir" />
+		<button onclick="mainFunction()">Generate Path</button><br>
+		<table id="gridTable" border="1"></table>
+		<p id="result"></p>
+		
+		<script>
+		let allWord = [];
+		document.addEventListener("keyup",function(e){
+		let word = e.key;
+		word = word.toUpperCase();
+		if(word=="F" || word=="R" || word=="L") {
+		allWord.push(word);
+		getFinalPosition(allWord.join(''));
+		}
+		});
+			
+			function mainFunction() {
+				let route = document.getElementById("path").value;
+				route = route.toUpperCase();
+				result = getFinalPosition(route);
+			}
+			
+			function createTable() {
+				let rowCount = Number(document.getElementById("rowCount").value);
+				let colCount = Number(document.getElementById("colCount").value);
+				for (var r = 0; r < rowCount; r++) {
+					var insertRowInTable = document.getElementById("gridTable").insertRow(r);
+					for (var c = 0; c < colCount; c++) {
+						var y = insertRowInTable.insertCell(c);
+					}
+				}
+				var calc = Math.floor((rowCount * colCount)/4);
+				for (var j = 0; j < calc; j++) {
+					do {
+						var randomRow = Math.floor(Math.random()*rowCount);
+						var randomCol = Math.floor(Math.random()*colCount);
+					} while (randomRow === rowCount-1 && randomCol === 0);
+					document.getElementById("gridTable").rows[randomRow].cells[randomCol].style.backgroundImage = "url('cross.png')";
+				}
+				document.getElementById("gridTable").rows[rowCount-1].cells[0].style.backgroundImage = "url('turtle.png')";
+			}
+			
+			function getFinalPosition(route){
+				let x=1;
+				let y=1;
+				let dir='N';
+				let rowCount = Number(document.getElementById("rowCount").value);
+				let colCount = Number(document.getElementById("colCount").value);
+				if(route.length == 0){
+					document.getElementById("result").innerHTML = "Please enter the value";
+					} else {
+					var rCount = document.getElementById("row").value;
+					var cCount = document.getElementById("column").value;
+					if (rCount){
+						document.getElementById("gridTable").rows[rCount].cells[cCount].style.backgroundImage = "";
+					}
+					document.getElementById("gridTable").rows[rowCount-1].cells[0].style.backgroundImage = "";
+					for(i=0;i<route.length;i++){
+						if(route[i]=='L'){
+							if(dir=='N') {    //move left
+								dir='W';
+							}
+							else if (dir=='W') {
+								dir='S';
+							}
+							else if (dir=='S') {
+								dir='E';
+							}
+							else {
+								dir='N';
+							}
+						}
+						else if(route[i]=='F'){   //move forward
+							if (dir=='N') {
+							if(y < rowCount) {
+								if (document.getElementById("gridTable").rows[rowCount-(y+1)].cells[x-1].style.backgroundImage.indexOf("cross.png") == -1) {
+									y++;
+								}
+							}
+							}
+							else if (dir=='S') {
+							if(y > 1) {
+								if (document.getElementById("gridTable").rows[rowCount-(y-1)].cells[x-1].style.backgroundImage.indexOf("cross.png") == -1) {
+									y--;
+								}
+							}
+							}
+							else if (dir=='E') {
+							if(x < colCount) {
+								if (document.getElementById("gridTable").rows[rowCount-y].cells[(x+1)-1].style.backgroundImage.indexOf("cross.png") == -1) {
+									x++;
+								}
+							}
+							}
+							else {
+							if(x > 1) {
+								if (document.getElementById("gridTable").rows[rowCount-y].cells[(x-1)-1].style.backgroundImage.indexOf("cross.png") == -1) {
+									x--;
+								}
+							}
+							}
+						}
+						else {        //move right
+							if(dir=='N') {
+								dir='E';
+							}
+							else if (dir=='E') {
+								dir='S';
+							}
+							else if (dir=='S') {
+								dir='W';
+							}
+							else {
+								dir='N';
+							}
+						}
+					}
+					var rCount = rowCount-y;
+					var cCount = x-1;
+					var turtlePosition = document.getElementById("gridTable").rows[rCount].cells[cCount];
+					switch(dir) {
+						case 'N':
+						turtlePosition.style.transform = "rotate(0)";
+						break;
+						case 'E':
+						turtlePosition.style.transform = "rotate(90deg)";
+						break;
+						case 'S':
+						turtlePosition.style.transform = "rotate(3.142rad)";
+						break;
+						case 'W':
+						turtlePosition.style.transform = "rotate(-0.25turn) scaleX(-1)";
+						break;
+					}
+					turtlePosition.style.backgroundImage = "url('turtle.png')";
+					document.getElementById("result").innerHTML = "The Current Position Of Turtle Is: " +x+","+y+", "+dir;
+					document.getElementById("row").value = rCount;
+					document.getElementById("column").value = cCount;
+				}
+			}
+			
+		</script>
+	</body>
+</html>
